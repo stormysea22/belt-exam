@@ -1,4 +1,4 @@
-package com.theismann.beltExam.validator;
+package com.theismann.beltExam.validation;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

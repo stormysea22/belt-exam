@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.theismann.beltExam.models.Idea;
 import com.theismann.beltExam.models.User;
 import com.theismann.beltExam.services.AppService;
-import com.theismann.beltExam.validator.UserValidator;
+import com.theismann.beltExam.validation.UserValidator;
 
 
 
@@ -77,9 +77,38 @@ public class HomeController {
 
 //	
 //	//**********************************
-//	// adding and removing attendees to/from events
+//	// liking and unliking
 	//**********************************
-
+	
+	@RequestMapping("/ideas/{id}/like")
+	public String like(@PathVariable("id")Long id, HttpSession session) {
+		Idea idea = appService.findIdeaById(id);
+		Long loggedinuserid = (Long)session.getAttribute("userid");
+		User loggedinuser = this.appService.findUserById(loggedinuserid);
+		
+		List<User> likedIdeas=idea.getLikedUser();
+		likedIdeas.add(loggedinuser);
+		appService.updateIdea(idea);
+		
+		return "redirect:/ideas";
+	}
+	
+	@RequestMapping("/ideas/{id}/unlike")
+	public String unlike(@PathVariable("id")Long id, HttpSession session) {
+		Idea idea = appService.findIdeaById(id);
+		Long loggedinuserid = (Long)session.getAttribute("userid");
+		User loggedinuser = this.appService.findUserById(loggedinuserid);
+		
+		List<User> likedIdeas=idea.getLikedUser();
+		likedIdeas.remove(loggedinuser);
+		appService.updateIdea(idea);
+		
+		return "redirect:/ideas";
+	}
+	
+	
+	
+	
 //	@RequestMapping(value="/events/{event_id}/join")
 //	public String addAttendee(@PathVariable("event_id") Long event_id, HttpSession session) {
 //		User attendee = appService.findUserById((Long)session.getAttribute("userid"));
@@ -105,23 +134,30 @@ public class HomeController {
 	
 	//**********************************
 	// Delete and update Event
-	//**********************************
-	
-//	@RequestMapping(value="/events/{event_id}/delete")
-//	public String deleteEvent(@PathVariable("event_id")Long event_id) {
-//		this.appService.findEventById(event_id);
-//		this.appService.deleteEvent(event_id);
-//		return "redirect:/events";
+	//**********************************	
+//	@RequestMapping("/ideas/edit/{id}")
+//	public String editIdea(@PathVariable("id") Long id, Model model, HttpSession session) {
+//		
+//				
+//		model.addAttribute("idea", this.appService.findIdeaById(id));
+//		
+//		model.addAttribute("allusers", this.appService.findAllUsers() );
+//		return "edit.jsp";
 //	}
-//	
+	
 	@RequestMapping("/ideas/edit/{id}")
-	public String editIdea(@PathVariable("id") Long id, Model model) {
+	public String editIdea(@PathVariable("id") Long id, Model model, HttpSession session) {
+		Idea idea = appService.findIdeaById(id);
+		model.addAttribute("idea", idea);
 		
-		model.addAttribute("idea", this.appService.findIdeaById(id));
+		Long loggedinuserid = (Long)session.getAttribute("userid");
+//		User loggedinuser = this.appService.findUserById(loggedinuserid);
 		
-		model.addAttribute("allusers", this.appService.findAllUsers() );
-		
-		return "edit.jsp";
+		if(idea.getCreator().getId().equals(loggedinuserid)) {
+			return "edit.jsp";
+	} else {
+		return "redirect:/ideas";
+	}
 	}
 	
 	@PostMapping("/ideas/update/{id}")

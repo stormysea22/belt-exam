@@ -15,13 +15,13 @@ public class AppService {
 	
 	private final UserRepository userRepository;
 	private final IdeaRepository ideaRepository;
-	//private final IdeaLikeRepository ideaLikeRepository
+//	private final IdeaLikeRepository ideaLikeRepository
     
     // dependency injection
     public AppService(UserRepository userRepository, IdeaRepository ideaRepository) {
         this.userRepository = userRepository;
         this.ideaRepository = ideaRepository;
-        //this.ideaLikeRepository = ideaLikeRepository;
+//        this.ideaLikeRepository = ideaLikeRepository;
     }
     
     
